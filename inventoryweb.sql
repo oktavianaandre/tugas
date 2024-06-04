@@ -1,0 +1,248 @@
+-- phpMyAdmin SQL Dump
+-- version 4.8.5
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Jun 02, 2024 at 02:50 PM
+-- Server version: 10.1.38-MariaDB
+-- PHP Version: 7.3.2
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `inventoryweb`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `barang`
+--
+
+CREATE TABLE `barang` (
+  `id_barang` varchar(20) NOT NULL,
+  `nama_barang` varchar(60) DEFAULT NULL,
+  `stok` varchar(4) DEFAULT NULL,
+  `id_satuan` int(20) DEFAULT NULL,
+  `id_jenis` int(20) DEFAULT NULL,
+  `foto` varchar(225) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `barang`
+--
+
+INSERT INTO `barang` (`id_barang`, `nama_barang`, `stok`, `id_satuan`, `id_jenis`, `foto`) VALUES
+('BRG-0001', 'OLI', '300', 1, 3, 'd4f130cc51185c56c9effcfa0b4a30a0.jpg'),
+('BRG-0002', 'Ban', '1000', 2, 1, 'aqua.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `barang_keluar`
+--
+
+CREATE TABLE `barang_keluar` (
+  `id_barang_keluar` varchar(30) NOT NULL,
+  `id_barang` varchar(30) DEFAULT NULL,
+  `id_user` varchar(30) DEFAULT NULL,
+  `jumlah_keluar` varchar(5) DEFAULT NULL,
+  `tgl_keluar` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `barang_keluar`
+--
+
+INSERT INTO `barang_keluar` (`id_barang_keluar`, `id_barang`, `id_user`, `jumlah_keluar`, `tgl_keluar`) VALUES
+('BRG-K-0001', 'BRG-0002', 'USR-001', '20', '2020-09-15'),
+('BRG-K-0002', 'BRG-0002', 'USR-006', '30', '2024-05-31');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `barang_masuk`
+--
+
+CREATE TABLE `barang_masuk` (
+  `id_barang_masuk` varchar(40) NOT NULL,
+  `id_supplier` varchar(30) DEFAULT NULL,
+  `id_barang` varchar(30) DEFAULT NULL,
+  `id_user` varchar(30) DEFAULT NULL,
+  `jumlah_masuk` int(10) DEFAULT NULL,
+  `tgl_masuk` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `barang_masuk`
+--
+
+INSERT INTO `barang_masuk` (`id_barang_masuk`, `id_supplier`, `id_barang`, `id_user`, `jumlah_masuk`, `tgl_masuk`) VALUES
+('BRG-M-0001', 'SPLY-0003', 'BRG-0002', 'USR-001', 30, '2020-09-15');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jenis`
+--
+
+CREATE TABLE `jenis` (
+  `id_jenis` int(20) NOT NULL,
+  `nama_jenis` varchar(20) DEFAULT NULL,
+  `ket` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `jenis`
+--
+
+INSERT INTO `jenis` (`id_jenis`, `nama_jenis`, `ket`) VALUES
+(1, 'Sparepart', ''),
+(3, 'Pelumas', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `satuan`
+--
+
+CREATE TABLE `satuan` (
+  `id_satuan` int(20) NOT NULL,
+  `nama_satuan` varchar(60) DEFAULT NULL,
+  `ket` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `satuan`
+--
+
+INSERT INTO `satuan` (`id_satuan`, `nama_satuan`, `ket`) VALUES
+(1, 'Litter', ''),
+(2, 'Unit', ''),
+(4, 'Pack', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `supplier`
+--
+
+CREATE TABLE `supplier` (
+  `id_supplier` varchar(10) NOT NULL,
+  `nama_supplier` varchar(60) DEFAULT NULL,
+  `notelp` varchar(15) DEFAULT NULL,
+  `alamat` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `supplier`
+--
+
+INSERT INTO `supplier` (`id_supplier`, `nama_supplier`, `notelp`, `alamat`) VALUES
+('SPLY-0001', 'Radhian Sobarna', '087817379229', 'Sumedang'),
+('SPLY-0002', 'Heri Perdiansyah', '089829128118', 'Sumedang'),
+('SPLY-0003', 'Widi Priansyah', '089876261556', 'Sumedang');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `id_user` varchar(50) NOT NULL,
+  `nama` varchar(50) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `notelp` varchar(15) NOT NULL,
+  `level` enum('petugas','admin','manajer') NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `foto` varchar(50) NOT NULL,
+  `status` enum('Aktif','Tidak Aktif') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`id_user`, `nama`, `username`, `email`, `notelp`, `level`, `password`, `foto`, `status`) VALUES
+('USR-004', 'willy', 'willy', 'oktavianaandree@gmail.com', '088739898299', 'admin', '35284e329c3a5f1c2af846329ae7b8e9', 'desain_lagi.jpeg', 'Aktif'),
+('USR-005', 'farel', 'farel', 'oktacitamvan@gmail.com', '08998279536', 'manajer', 'cb14c8bb3ef9b92646dd460d530b6056', 'lp3ii.png', 'Aktif'),
+('USR-007', 'Oktaviana Andre', 'okta', 'oktavianaandree@gmail.com', '08998279536', 'admin', '658276e9dfa2ee601962801a0277b1a0', '2023_03_29_13_50_IMG_1522.JPG', 'Aktif'),
+('USR-008', 'alfa', 'alfa', 'alfa@gmail.com', '089754676478', 'petugas', '730703f98d615e28a17c00e5b2784ab1', 'LOGO_PKKMB.png', 'Aktif');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `barang`
+--
+ALTER TABLE `barang`
+  ADD PRIMARY KEY (`id_barang`);
+
+--
+-- Indexes for table `barang_keluar`
+--
+ALTER TABLE `barang_keluar`
+  ADD PRIMARY KEY (`id_barang_keluar`);
+
+--
+-- Indexes for table `barang_masuk`
+--
+ALTER TABLE `barang_masuk`
+  ADD PRIMARY KEY (`id_barang_masuk`);
+
+--
+-- Indexes for table `jenis`
+--
+ALTER TABLE `jenis`
+  ADD PRIMARY KEY (`id_jenis`);
+
+--
+-- Indexes for table `satuan`
+--
+ALTER TABLE `satuan`
+  ADD PRIMARY KEY (`id_satuan`);
+
+--
+-- Indexes for table `supplier`
+--
+ALTER TABLE `supplier`
+  ADD PRIMARY KEY (`id_supplier`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id_user`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `jenis`
+--
+ALTER TABLE `jenis`
+  MODIFY `id_jenis` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `satuan`
+--
+ALTER TABLE `satuan`
+  MODIFY `id_satuan` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
