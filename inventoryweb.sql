@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.5
+-- version 5.0.3
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 02, 2024 at 02:50 PM
--- Server version: 10.1.38-MariaDB
--- PHP Version: 7.3.2
+-- Generation Time: Jun 24, 2024 at 04:29 AM
+-- Server version: 10.4.14-MariaDB
+-- PHP Version: 7.2.34
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -34,16 +33,22 @@ CREATE TABLE `barang` (
   `stok` varchar(4) DEFAULT NULL,
   `id_satuan` int(20) DEFAULT NULL,
   `id_jenis` int(20) DEFAULT NULL,
-  `foto` varchar(225) DEFAULT NULL
+  `foto` varchar(225) DEFAULT NULL,
+  `tgl_produksi` date DEFAULT NULL,
+  `tgl_expired` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `barang`
 --
 
-INSERT INTO `barang` (`id_barang`, `nama_barang`, `stok`, `id_satuan`, `id_jenis`, `foto`) VALUES
-('BRG-0001', 'OLI', '300', 1, 3, 'd4f130cc51185c56c9effcfa0b4a30a0.jpg'),
-('BRG-0002', 'Ban', '1000', 2, 1, 'aqua.jpg');
+INSERT INTO `barang` (`id_barang`, `nama_barang`, `stok`, `id_satuan`, `id_jenis`, `foto`, `tgl_produksi`, `tgl_expired`) VALUES
+('BRG-0002', 'Ban', '1000', 2, 1, 'aqua.jpg', '2024-06-18', '2024-06-26'),
+('BRG-0003', 'OLI', '300', 1, 3, 'ESP.png', '2023-01-01', '2025-01-01'),
+('BRG-0004', 'Ban', '1000', 2, 1, 'aqua.jpg', '2022-06-01', '2024-06-01'),
+('BRG-0005', 'pelumas', '120', 1, 3, 'box.png', '2024-06-12', '2025-10-22'),
+('BRG-0006', 'Busi', '350', 2, 3, 'box.png', '2024-06-01', '2024-06-30'),
+('BRG-0007', 'Rantai', '444', 2, 1, 'box.png', '2024-01-06', '2024-06-19');
 
 -- --------------------------------------------------------
 
@@ -98,16 +103,18 @@ INSERT INTO `barang_masuk` (`id_barang_masuk`, `id_supplier`, `id_barang`, `id_u
 CREATE TABLE `jenis` (
   `id_jenis` int(20) NOT NULL,
   `nama_jenis` varchar(20) DEFAULT NULL,
-  `ket` text
+  `merk` varchar(50) DEFAULT NULL,
+  `ket` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `jenis`
 --
 
-INSERT INTO `jenis` (`id_jenis`, `nama_jenis`, `ket`) VALUES
-(1, 'Sparepart', ''),
-(3, 'Pelumas', '');
+INSERT INTO `jenis` (`id_jenis`, `nama_jenis`, `merk`, `ket`) VALUES
+(1, 'Sparepart', 'Kawasaki', ''),
+(3, 'Pelumas', 'Yamaha', ''),
+(5, 'lll', 'Honda', '');
 
 -- --------------------------------------------------------
 
@@ -118,7 +125,7 @@ INSERT INTO `jenis` (`id_jenis`, `nama_jenis`, `ket`) VALUES
 CREATE TABLE `satuan` (
   `id_satuan` int(20) NOT NULL,
   `nama_satuan` varchar(60) DEFAULT NULL,
-  `ket` text
+  `ket` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -140,7 +147,7 @@ CREATE TABLE `supplier` (
   `id_supplier` varchar(10) NOT NULL,
   `nama_supplier` varchar(60) DEFAULT NULL,
   `notelp` varchar(15) DEFAULT NULL,
-  `alamat` text
+  `alamat` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -148,9 +155,10 @@ CREATE TABLE `supplier` (
 --
 
 INSERT INTO `supplier` (`id_supplier`, `nama_supplier`, `notelp`, `alamat`) VALUES
-('SPLY-0001', 'Radhian Sobarna', '087817379229', 'Sumedang'),
-('SPLY-0002', 'Heri Perdiansyah', '089829128118', 'Sumedang'),
-('SPLY-0003', 'Widi Priansyah', '089876261556', 'Sumedang');
+('SPLY-0001', 'Astra Honda Motor', '087817379229', 'Jl mm2100'),
+('SPLY-0002', 'Heri Perdiansyah', '0898', 'Sumedang'),
+('SPLY-0003', 'Widi Priansyah', '08998279536', 'Sumedang'),
+('SPLY-0004', 'Okta', '1234', 'Denso');
 
 -- --------------------------------------------------------
 
@@ -176,9 +184,10 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`id_user`, `nama`, `username`, `email`, `notelp`, `level`, `password`, `foto`, `status`) VALUES
 ('USR-004', 'willy', 'willy', 'oktavianaandree@gmail.com', '088739898299', 'admin', '35284e329c3a5f1c2af846329ae7b8e9', 'desain_lagi.jpeg', 'Aktif'),
-('USR-005', 'farel', 'farel', 'oktacitamvan@gmail.com', '08998279536', 'manajer', 'cb14c8bb3ef9b92646dd460d530b6056', 'lp3ii.png', 'Aktif'),
-('USR-007', 'Oktaviana Andre', 'okta', 'oktavianaandree@gmail.com', '08998279536', 'admin', '658276e9dfa2ee601962801a0277b1a0', '2023_03_29_13_50_IMG_1522.JPG', 'Aktif'),
-('USR-008', 'alfa', 'alfa', 'alfa@gmail.com', '089754676478', 'petugas', '730703f98d615e28a17c00e5b2784ab1', 'LOGO_PKKMB.png', 'Aktif');
+('USR-005', 'farel', 'farel', 'oktacitamvan@gmail.com', '08998279536', 'petugas', 'cb14c8bb3ef9b92646dd460d530b6056', 'lp3ii.png', 'Aktif'),
+('USR-007', 'Oktaviana Andre', 'okta', 'oktavianaandree@gmail.com', '08998279536', 'admin', '658276e9dfa2ee601962801a0277b1a0', 'pelk.png', 'Aktif'),
+('USR-008', 'alfa', 'alfa', 'alfa@gmail.com', '089754676478', 'petugas', '730703f98d615e28a17c00e5b2784ab1', 'LOGO_PKKMB.png', 'Aktif'),
+('USR-009', 'wwwww', 'wwww', 'oktavianaandree@gmail.com', '777745345554325', 'admin', '658276e9dfa2ee601962801a0277b1a0', 'Picture1.png', 'Aktif');
 
 --
 -- Indexes for dumped tables
@@ -234,7 +243,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `jenis`
 --
 ALTER TABLE `jenis`
-  MODIFY `id_jenis` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_jenis` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `satuan`
