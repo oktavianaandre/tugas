@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 24, 2024 at 04:29 AM
+-- Generation Time: Jun 24, 2024 at 11:09 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.2.34
 
@@ -32,7 +32,8 @@ CREATE TABLE `barang` (
   `nama_barang` varchar(60) DEFAULT NULL,
   `stok` varchar(4) DEFAULT NULL,
   `id_satuan` int(20) DEFAULT NULL,
-  `id_jenis` int(20) DEFAULT NULL,
+  `jenis` varchar(20) DEFAULT NULL,
+  `merk` varchar(20) NOT NULL,
   `foto` varchar(225) DEFAULT NULL,
   `tgl_produksi` date DEFAULT NULL,
   `tgl_expired` date DEFAULT NULL
@@ -42,13 +43,12 @@ CREATE TABLE `barang` (
 -- Dumping data for table `barang`
 --
 
-INSERT INTO `barang` (`id_barang`, `nama_barang`, `stok`, `id_satuan`, `id_jenis`, `foto`, `tgl_produksi`, `tgl_expired`) VALUES
-('BRG-0002', 'Ban', '1000', 2, 1, 'aqua.jpg', '2024-06-18', '2024-06-26'),
-('BRG-0003', 'OLI', '300', 1, 3, 'ESP.png', '2023-01-01', '2025-01-01'),
-('BRG-0004', 'Ban', '1000', 2, 1, 'aqua.jpg', '2022-06-01', '2024-06-01'),
-('BRG-0005', 'pelumas', '120', 1, 3, 'box.png', '2024-06-12', '2025-10-22'),
-('BRG-0006', 'Busi', '350', 2, 3, 'box.png', '2024-06-01', '2024-06-30'),
-('BRG-0007', 'Rantai', '444', 2, 1, 'box.png', '2024-01-06', '2024-06-19');
+INSERT INTO `barang` (`id_barang`, `nama_barang`, `stok`, `id_satuan`, `jenis`, `merk`, `foto`, `tgl_produksi`, `tgl_expired`) VALUES
+('BRG-0003', 'OLI', '300', 1, 'Pelumas', 'Yamaha', 'ESP.png', '2023-01-01', '2025-01-01'),
+('BRG-0004', 'Ban', '1000', 2, 'Sparepart', 'Honda', 'aqua.jpg', '2022-06-01', '2024-06-01'),
+('BRG-0005', 'Busi', '120', 1, 'Sparepart', 'Kawasaki', 'box.png', '2024-06-12', '2025-10-22'),
+('BRG-0006', 'Busi', '350', 2, 'Sparepart', 'Honda', 'box.png', '2024-06-01', '2024-06-30'),
+('BRG-0007', 'Rantai', '444', 2, 'Oli', 'Suzuki', 'box.png', '2024-01-06', '2024-06-19');
 
 -- --------------------------------------------------------
 
@@ -60,6 +60,8 @@ CREATE TABLE `barang_keluar` (
   `id_barang_keluar` varchar(30) NOT NULL,
   `id_barang` varchar(30) DEFAULT NULL,
   `id_user` varchar(30) DEFAULT NULL,
+  `jenis` varchar(20) NOT NULL,
+  `merk` varchar(20) NOT NULL,
   `jumlah_keluar` varchar(5) DEFAULT NULL,
   `tgl_keluar` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -68,9 +70,8 @@ CREATE TABLE `barang_keluar` (
 -- Dumping data for table `barang_keluar`
 --
 
-INSERT INTO `barang_keluar` (`id_barang_keluar`, `id_barang`, `id_user`, `jumlah_keluar`, `tgl_keluar`) VALUES
-('BRG-K-0001', 'BRG-0002', 'USR-001', '20', '2020-09-15'),
-('BRG-K-0002', 'BRG-0002', 'USR-006', '30', '2024-05-31');
+INSERT INTO `barang_keluar` (`id_barang_keluar`, `id_barang`, `id_user`, `jenis`, `merk`, `jumlah_keluar`, `tgl_keluar`) VALUES
+('BRG-K-0003', 'BRG-0007', 'USR-005', 'Oli', 'Suzuki', '1', '2024-06-24');
 
 -- --------------------------------------------------------
 
@@ -83,6 +84,8 @@ CREATE TABLE `barang_masuk` (
   `id_supplier` varchar(30) DEFAULT NULL,
   `id_barang` varchar(30) DEFAULT NULL,
   `id_user` varchar(30) DEFAULT NULL,
+  `jenis` varchar(20) NOT NULL,
+  `merk` varchar(20) NOT NULL,
   `jumlah_masuk` int(10) DEFAULT NULL,
   `tgl_masuk` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -91,8 +94,11 @@ CREATE TABLE `barang_masuk` (
 -- Dumping data for table `barang_masuk`
 --
 
-INSERT INTO `barang_masuk` (`id_barang_masuk`, `id_supplier`, `id_barang`, `id_user`, `jumlah_masuk`, `tgl_masuk`) VALUES
-('BRG-M-0001', 'SPLY-0003', 'BRG-0002', 'USR-001', 30, '2020-09-15');
+INSERT INTO `barang_masuk` (`id_barang_masuk`, `id_supplier`, `id_barang`, `id_user`, `jenis`, `merk`, `jumlah_masuk`, `tgl_masuk`) VALUES
+('BRG-M-0001', 'SPLY-0003', 'BRG-0002', 'USR-001', '1', '', 30, '2020-09-15'),
+('BRG-M-0003', 'SPLY-0004', 'BRG-0007', 'USR-005', '5', '', 221, '2024-06-24'),
+('BRG-M-0004', 'SPLY-0004', 'BRG-0006', 'USR-005', '5', '', 122, '2024-06-24'),
+('BRG-M-0007', 'SPLY-0001', 'BRG-0007', 'USR-005', 'Oli', 'Suzuki', 55, '2024-06-24');
 
 -- --------------------------------------------------------
 
@@ -114,7 +120,7 @@ CREATE TABLE `jenis` (
 INSERT INTO `jenis` (`id_jenis`, `nama_jenis`, `merk`, `ket`) VALUES
 (1, 'Sparepart', 'Kawasaki', ''),
 (3, 'Pelumas', 'Yamaha', ''),
-(5, 'lll', 'Honda', '');
+(5, 'Krengkes', 'Honda', '');
 
 -- --------------------------------------------------------
 
