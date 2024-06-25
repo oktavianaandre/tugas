@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 24, 2024 at 11:09 AM
+-- Generation Time: Jun 25, 2024 at 11:17 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.2.34
 
@@ -45,10 +45,11 @@ CREATE TABLE `barang` (
 
 INSERT INTO `barang` (`id_barang`, `nama_barang`, `stok`, `id_satuan`, `jenis`, `merk`, `foto`, `tgl_produksi`, `tgl_expired`) VALUES
 ('BRG-0003', 'OLI', '300', 1, 'Pelumas', 'Yamaha', 'ESP.png', '2023-01-01', '2025-01-01'),
-('BRG-0004', 'Ban', '1000', 2, 'Sparepart', 'Honda', 'aqua.jpg', '2022-06-01', '2024-06-01'),
+('BRG-0004', 'Ban', '1000', 2, 'Sparepart', 'Yamaha', 'aqua.jpg', '2022-06-01', '2024-06-01'),
 ('BRG-0005', 'Busi', '120', 1, 'Sparepart', 'Kawasaki', 'box.png', '2024-06-12', '2025-10-22'),
-('BRG-0006', 'Busi', '350', 2, 'Sparepart', 'Honda', 'box.png', '2024-06-01', '2024-06-30'),
-('BRG-0007', 'Rantai', '444', 2, 'Oli', 'Suzuki', 'box.png', '2024-01-06', '2024-06-19');
+('BRG-0006', 'Karburator', '350', 2, 'Sparepart', 'Yamaha', 'box.png', '2024-06-01', '2024-06-30'),
+('BRG-0007', 'Rantai', '444', 2, 'Sparepart', 'Yamaha', 'box.png', '2024-01-06', '2024-06-19'),
+('BRG-0008', 'Gembok Motor', '200', 5, 'Aksesori', 'Yamaha', 'box.png', '2024-06-01', '2024-07-01');
 
 -- --------------------------------------------------------
 
@@ -71,7 +72,10 @@ CREATE TABLE `barang_keluar` (
 --
 
 INSERT INTO `barang_keluar` (`id_barang_keluar`, `id_barang`, `id_user`, `jenis`, `merk`, `jumlah_keluar`, `tgl_keluar`) VALUES
-('BRG-K-0003', 'BRG-0007', 'USR-005', 'Oli', 'Suzuki', '1', '2024-06-24');
+('BRG-K-0003', 'BRG-0007', 'USR-005', 'Oli', 'Suzuki', '1', '2024-06-24'),
+('BRG-K-0004', 'BRG-0006', 'USR-005', 'Sparepart', 'Honda', '22', '2024-06-25'),
+('BRG-K-0005', 'BRG-0003', 'USR-005', 'Pelumas', 'Yamaha', '9', '2024-06-25'),
+('BRG-K-0006', 'BRG-0004', 'USR-005', 'Ban', 'Yamaha', '1', '2024-06-25');
 
 -- --------------------------------------------------------
 
@@ -141,7 +145,8 @@ CREATE TABLE `satuan` (
 INSERT INTO `satuan` (`id_satuan`, `nama_satuan`, `ket`) VALUES
 (1, 'Litter', ''),
 (2, 'Unit', ''),
-(4, 'Pack', '');
+(4, 'Meter', ''),
+(5, 'Set', '');
 
 -- --------------------------------------------------------
 
@@ -255,7 +260,7 @@ ALTER TABLE `jenis`
 -- AUTO_INCREMENT for table `satuan`
 --
 ALTER TABLE `satuan`
-  MODIFY `id_satuan` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_satuan` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
