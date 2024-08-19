@@ -1,7 +1,5 @@
 #include <WiFi.h>
-#include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
+#include <SimpleDHT.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
 #include <InfluxDbClient.h>
@@ -17,10 +15,9 @@ ESP8266WiFiMulti wifiMulti;
 #define DEVICE "ESP8266"
 #endif
 
-// BME280 I2C address
-#define BME280_I2C_ADDRESS 0x76
-
-Adafruit_BME280 bme; // BME280 instance
+// DHT11 sensor pin
+int pinDHT11 = 15;
+SimpleDHT11 dht11;
 
 // WiFi credentials
 const char* default_ssid = "DMIA-GUEST";
@@ -29,14 +26,14 @@ char ssid[32];
 char password[32];
 
 // InfluxDB configuration
-  #define INFLUXDB_URL "https://us-east-1-1.aws.cloud2.influxdata.com"
-  #define INFLUXDB_TOKEN "9L0Jjvg0PqCF-1CG1eu2T9W039tRH_fn8ep20t4Hp923hedDbK8H336dyKol54F_0yP3NeYAJjaR5OlrLpsHzQ=="
-  #define INFLUXDB_ORG "esp32"
-  #define INFLUXDB_BUCKET "dmia"
+#define INFLUXDB_URL "https://us-east-1-1.aws.cloud2.influxdata.com"
+#define INFLUXDB_TOKEN "IwtgCMHBwhAkrLXoTGaZy8AFXAY5VH61YAvrh5VnezwJxaFl69gEA0zE94hSNqQoaBj4wA6-5kwvFZDEphoGWg=="
+#define INFLUXDB_ORG "66f9fed068c7d0ac"
+#define INFLUXDB_BUCKET "UAS"
 #define TZ_INFO "UTC7"
 
 InfluxDBClient client(INFLUXDB_URL, INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_TOKEN, InfluxDbCloud2CACert);
-Point sensor("bme280_sensor");
+Point sensor("dht_sensor");
 
 // Web server
 WebServer server(80);
@@ -85,12 +82,6 @@ void setup() {
     Serial.println(client.getLastErrorMessage());
   }
 
-  // Initialize BME280 sensor
-  if (!bme.begin(BME280_I2C_ADDRESS)) {
-    Serial.println("Could not find a valid BME280 sensor, check wiring!");
-    while (1);
-  }
-
   // Add tags to the data point
   sensor.addTag("device", DEVICE);
 }
@@ -98,43 +89,47 @@ void setup() {
 void loop() {
   server.handleClient();
 
-  // Read data from BME280 sensor
-  float temperature = bme.readTemperature();
-  float humidity = bme.readHumidity();
+  // Read data from DHT11 sensor
+  byte temperature = 0;
+  byte humidity = 0;
+  int err = SimpleDHTErrSuccess;
+  if ((err = dht11.read(pinDHT11, &temperature, &humidity, NULL)) == SimpleDHTErrSuccess) {
+    // Clear fields for reusing the point. Tags will remain the same as set above.
+    sensor.clearFields();
 
-  // Clear fields for reusing the point. Tags will remain the same as set above.
-  sensor.clearFields();
+    // Store measured values into point
+    sensor.addField("humidity_", humidity);
+    sensor.addField("temperature_", temperature);
 
-  // Store measured values into point
-  sensor.addField("1humid", humidity);
-  sensor.addField("1temp", temperature);
+    // Print what we are exactly writing
+    Serial.print("Writing: ");
+    Serial.println(sensor.toLineProtocol());
 
-  // Print what we are exactly writing
-  Serial.print("Writing: ");
-  Serial.println(sensor.toLineProtocol());
+    // Check WiFi connection and reconnect if needed
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("WiFi connection lost");
+      return;
+    }
 
-  // Check WiFi connection and reconnect if needed
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("WiFi connection lost");
-    return;
-  }
+    // Write point
+    if (!client.writePoint(sensor)) {
+      Serial.print("InfluxDB write failed: ");
+      Serial.println(client.getLastErrorMessage());
+    } else {
+      Serial.println("InfluxDB write successful");
+    }
 
-  // Write point
-  if (!client.writePoint(sensor)) {
-    Serial.print("InfluxDB write failed: ");
-    Serial.println(client.getLastErrorMessage());
+    // Display data on Serial Monitor
+    Serial.print("Temperature: ");
+    Serial.print((int)temperature);
+    Serial.println(" °C");
+    Serial.print("Humidity: ");
+    Serial.print((int)humidity);
+    Serial.println(" %");
+    Serial.println("===================");
   } else {
-    Serial.println("InfluxDB write successful");
+    Serial.println("Failed to read from DHT sensor");
   }
-
-  // Display data on Serial Monitor
-  Serial.print("Temperature: ");
-  Serial.print(temperature);
-  Serial.println(" °C");
-  Serial.print("Humidity: ");
-  Serial.print(humidity);
-  Serial.println(" %");
-  Serial.println("===================");
 
   delay(3000); // Send data every 3 seconds
 }
